@@ -1,10 +1,13 @@
 package com.saketsaxena.paymenttransfersystem.helper;
 
 import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
+import com.saketsaxena.paymenttransfersystem.service.MiniStatementService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+
+import static com.saketsaxena.paymenttransfersystem.DTOs.TransactionType.*;
 
 /** Represents in-memory database to store account balance.
  * @author Saket Saxena
@@ -16,8 +19,10 @@ public class AccountStore {
     /** Represents the map of all the account balances.
      */
     private final Map<Integer, AccountBalance> accountBalances = new HashMap<>();
+    private final MiniStatementService miniStatementService;
 
-    public AccountStore() {
+    public AccountStore(MiniStatementService miniStatementService) {
+        this.miniStatementService = miniStatementService;
         accountBalances.put(111, new AccountBalance(111, new BigDecimal("100.10"), "GBP"));
         accountBalances.put(222, new AccountBalance(222, new BigDecimal("324.45"), "GBP"));
     }
@@ -35,7 +40,7 @@ public class AccountStore {
      * @return boolean, true if balance is insufficient and false in balance is sufficient
      */
     public boolean isInsufficientBalance(int accountId) {
-        return accountBalances.get(accountId).balance().compareTo(BigDecimal.ZERO) > 0;
+        return accountBalances.get(accountId).balance().compareTo(BigDecimal.ZERO) < 0;
     }
 
     /**
@@ -59,6 +64,7 @@ public class AccountStore {
         AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
                 existingBalance.balance().add(amount), existingBalance.currency());
         accountBalances.put(receiverAccountId, newAccountBalance);
+        miniStatementService.addTransactionToMiniStatement(receiverAccountId, amount, existingBalance.currency(), CREDIT);
     }
 
     /**
@@ -72,5 +78,6 @@ public class AccountStore {
         AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
                 existingBalance.balance().subtract(amount), existingBalance.currency());
         accountBalances.put(senderAccountId, newAccountBalance);
+        miniStatementService.addTransactionToMiniStatement(senderAccountId, amount, existingBalance.currency(), DEBIT);
     }
 }
