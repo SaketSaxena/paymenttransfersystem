@@ -7,8 +7,8 @@ import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
 import com.saketsaxena.paymenttransfersystem.service.PaymentTransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -24,7 +24,7 @@ public class PaymentTransferController {
         this.paymentTransferService = paymentTransferService;
     }
 
-    @RequestMapping("/transfer-fund")
+    @PostMapping("/transfer-fund")
     public ResponseEntity<?> transferFund(@RequestBody PaymentTransfer paymentTransfer) {
         try {
             paymentTransferService.transferFund(paymentTransfer);
