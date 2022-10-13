@@ -3,6 +3,7 @@ package com.saketsaxena.paymenttransfersystem.controller;
 import com.saketsaxena.paymenttransfersystem.DTOs.ErrorResponse;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
 import com.saketsaxena.paymenttransfersystem.service.AccountBalanceService;
+import com.saketsaxena.paymenttransfersystem.service.MiniStatementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,16 +16,29 @@ import static org.springframework.http.HttpStatus.*;
 public class AccountBalanceController {
 
     private final AccountBalanceService accountBalanceService;
+    private final MiniStatementService miniStatementService;
 
     @Autowired
-    public AccountBalanceController(AccountBalanceService accountBalanceService) {
+    public AccountBalanceController(AccountBalanceService accountBalanceService,
+                                    MiniStatementService miniStatementService) {
         this.accountBalanceService = accountBalanceService;
+        this.miniStatementService = miniStatementService;
     }
 
     @GetMapping("/accounts/{accountId}/balance")
     public ResponseEntity<?> getAccountBalance(@PathVariable int accountId){
         try {
             return ResponseEntity.ok(accountBalanceService.getAccountBalance(accountId));
+        } catch (InvalidAccountException invalidAccountException) {
+            ErrorResponse errorResponse = new ErrorResponse(invalidAccountException.getMessage());
+            return ResponseEntity.status(NOT_FOUND).body(errorResponse);
+        }
+    }
+
+    @GetMapping("/accounts/{accountId}/statements/mini")
+    public ResponseEntity<?> getAccountMiniStatement(@PathVariable int accountId){
+        try {
+            return ResponseEntity.ok(miniStatementService.getMiniStatement(accountId));
         } catch (InvalidAccountException invalidAccountException) {
             ErrorResponse errorResponse = new ErrorResponse(invalidAccountException.getMessage());
             return ResponseEntity.status(NOT_FOUND).body(errorResponse);
