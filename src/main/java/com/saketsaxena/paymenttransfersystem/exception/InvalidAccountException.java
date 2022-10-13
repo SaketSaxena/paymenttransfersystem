@@ -6,7 +6,7 @@ package com.saketsaxena.paymenttransfersystem.exception;
  */
 public class InvalidAccountException extends RuntimeException {
 
-    /** Creates an employee with the specified name.
+    /** Creates an invalid account exception with the specified message.
      * @param message exception error message.
      */
     public InvalidAccountException(String message) {

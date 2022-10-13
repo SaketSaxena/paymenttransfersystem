@@ -25,7 +25,7 @@ public class AccountBalanceService {
      * @return An object representing the AccountBalance
      */
     public AccountBalance getAccountBalance(int accountId) {
-      return accountStore.getAccountBalances().stream()
+      return accountStore.getAccountBalances().values().stream()
                 .filter(accountBalance -> accountBalance.accountId() == accountId)
                 .findFirst()
                 .orElseThrow(() -> new InvalidAccountException(String.format("Account id %s is not valid", accountId)));

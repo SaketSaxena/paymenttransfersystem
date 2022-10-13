@@ -4,9 +4,7 @@ import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /** Represents in-memory database to store account balance.
  * @author Saket Saxena
@@ -24,10 +22,55 @@ public class AccountStore {
         accountBalances.put(222, new AccountBalance(222, new BigDecimal("324.45"), "GBP"));
     }
 
-    /** Get all account balance .
+    /**
+     * Get all account balance .
+     *
      * @return A List representing the AccountBalance of all the users.
      */
-    public List<AccountBalance> getAccountBalances() {
-        return accountBalances.values().stream().toList();
+    public Map<Integer, AccountBalance> getAccountBalances() {
+        return accountBalances;
+    }
+
+    /** Method to find out in the account is having insufficient balance.
+     * @return boolean, true if balance is insufficient and false in balance is sufficient
+     */
+    public boolean isInsufficientBalance(int accountId) {
+        return accountBalances.get(accountId).balance().compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    /**
+     * To check if the account is present or not.
+     *
+     * @return A boolean, true if account is present in the system
+     * and false is it is not present.
+     */
+    public boolean isValidAccount(int accountId) {
+        return Optional.ofNullable(accountBalances.get(accountId)).isPresent();
+    }
+
+    /**
+     * Method to credit fund to the specified account.
+     *
+     * @param receiverAccountId account id of the receiver
+     * @param amount amount need to be credit
+     */
+    public void creditFundToAccount(int receiverAccountId, BigDecimal amount) {
+        AccountBalance existingBalance = accountBalances.get(receiverAccountId);
+        AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
+                existingBalance.balance().add(amount), existingBalance.currency());
+        accountBalances.put(receiverAccountId, newAccountBalance);
+    }
+
+    /**
+     * Method to debit fund from the specified account.
+     *
+     * @param senderAccountId account id of the sender
+     * @param amount amount need to debit
+     */
+    public void debitFundFromAccount(int senderAccountId, BigDecimal amount) {
+        AccountBalance existingBalance = accountBalances.get(senderAccountId);
+        AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
+                existingBalance.balance().subtract(amount), existingBalance.currency());
+        accountBalances.put(senderAccountId, newAccountBalance);
     }
 }
