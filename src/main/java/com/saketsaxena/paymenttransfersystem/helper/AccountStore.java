@@ -1,13 +1,10 @@
 package com.saketsaxena.paymenttransfersystem.helper;
 
 import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
-import com.saketsaxena.paymenttransfersystem.service.MiniStatementService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
-
-import static com.saketsaxena.paymenttransfersystem.DTOs.TransactionType.*;
 
 /** Represents in-memory database to store account balance.
  * @author Saket Saxena
@@ -19,10 +16,7 @@ public class AccountStore {
     /** Represents the map of all the account balances.
      */
     private final Map<Integer, AccountBalance> accountBalances = new HashMap<>();
-    private final MiniStatementService miniStatementService;
-
-    public AccountStore(MiniStatementService miniStatementService) {
-        this.miniStatementService = miniStatementService;
+    public AccountStore() {
         accountBalances.put(111, new AccountBalance(111, new BigDecimal("100.10"), "GBP"));
         accountBalances.put(222, new AccountBalance(222, new BigDecimal("324.45"), "GBP"));
     }
@@ -54,30 +48,13 @@ public class AccountStore {
     }
 
     /**
-     * Method to credit fund to the specified account.
+     * update account balance for specified account id.
      *
-     * @param receiverAccountId account id of the receiver
-     * @param amount amount need to be credit
+     * @param accountId account id of the receiver.
+     * @param accountBalance Object of AccountBalance need to be updated.
      */
-    public void creditFundToAccount(int receiverAccountId, BigDecimal amount) {
-        AccountBalance existingBalance = accountBalances.get(receiverAccountId);
-        AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
-                existingBalance.balance().add(amount), existingBalance.currency());
-        accountBalances.put(receiverAccountId, newAccountBalance);
-        miniStatementService.addTransactionToMiniStatement(receiverAccountId, amount, existingBalance.currency(), CREDIT);
+    public void updateAccountBalance(int accountId, AccountBalance accountBalance){
+        accountBalances.put(accountId, accountBalance);
     }
 
-    /**
-     * Method to debit fund from the specified account.
-     *
-     * @param senderAccountId account id of the sender
-     * @param amount amount need to debit
-     */
-    public void debitFundFromAccount(int senderAccountId, BigDecimal amount) {
-        AccountBalance existingBalance = accountBalances.get(senderAccountId);
-        AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
-                existingBalance.balance().subtract(amount), existingBalance.currency());
-        accountBalances.put(senderAccountId, newAccountBalance);
-        miniStatementService.addTransactionToMiniStatement(senderAccountId, amount, existingBalance.currency(), DEBIT);
-    }
 }
