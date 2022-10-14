@@ -42,6 +42,15 @@ public class PaymentTransferControllerMVCTest {
     }
 
     @Test
+    void should_return_bad_request_when_sender_and_receiver_account_id_is_same() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/transfer-fund")
+                        .content(new ObjectMapper().writeValueAsString(new PaymentTransfer(222, 222, new BigDecimal("20"))))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void should_return_not_found_when_account_id_is_invalid() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/transfer-fund")

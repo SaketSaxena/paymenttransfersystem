@@ -2,6 +2,7 @@ package com.saketsaxena.paymenttransfersystem.service;
 
 import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
 import com.saketsaxena.paymenttransfersystem.DTOs.PaymentTransfer;
+import com.saketsaxena.paymenttransfersystem.exception.BadRequestException;
 import com.saketsaxena.paymenttransfersystem.exception.InsufficientBalanceException;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,6 +59,13 @@ class PaymentTransferServiceTest {
 
         verify(miniStatementService).addTransactionToMiniStatement(111, new BigDecimal("20"), "GBP", DEBIT);
         verify(miniStatementService).addTransactionToMiniStatement(222, new BigDecimal("20"), "GBP", CREDIT);
+    }
+
+    @Test
+    void should_not_transfer_fund_when_receiver_account_id_and_sender_account_id_is_same() {
+        PaymentTransfer paymentTransfer = new PaymentTransfer(111, 111, new BigDecimal("20"));
+        assertThatExceptionOfType(BadRequestException.class)
+                .isThrownBy(() -> paymentTransferService.transferFund(paymentTransfer));
     }
 
     @Test
