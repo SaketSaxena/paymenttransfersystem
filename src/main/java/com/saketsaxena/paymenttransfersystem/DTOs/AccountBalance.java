@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 
 /** Creates an account balance with the specified account id.
+ * @author Saket Saxena
+ * @since 1.0
  * @param accountId account id of the user
  * @param balance current balance in the account.
  * @param currency denotes the currency of the amount present in the account.

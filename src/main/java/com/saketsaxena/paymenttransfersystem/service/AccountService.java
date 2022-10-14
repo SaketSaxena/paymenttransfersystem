@@ -1,27 +1,27 @@
 package com.saketsaxena.paymenttransfersystem.service;
 
-import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
+import com.saketsaxena.paymenttransfersystem.DTOs.UserAccount;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 public interface AccountService {
 
     /**
-     * Get all account balance .
-     *
-     * @return A List representing the AccountBalance of all the users.
+     * Get User account for specified accountId.
+     * @param accountId account id of the user
+     * @return object of UserAccount.
      */
-    Map<Integer, AccountBalance> getAccountBalances();
+    UserAccount getUserAccount(int accountId);
 
     /** Method to find out in the account is having insufficient balance.
-     * @return boolean, true if balance is insufficient and false in balance is sufficient
+     * @param accountId account id for which balance needs to be found.
+     * @param amount amount which needs to be checked against the balance available.
+     * @return boolean, true if balance is insufficient and false in balance is sufficient.
      */
     boolean isInsufficientBalance(int accountId, BigDecimal amount);
 
     /**
      * To check if the account is present or not.
-     *
      * @return A boolean, true if account is present in the system
      * and false is it is not present.
      */
@@ -29,9 +29,8 @@ public interface AccountService {
 
     /**
      * update account balance for specified account id.
-     *
      * @param accountId account id of the receiver.
-     * @param accountBalance Object of AccountBalance need to be updated.
+     * @param accountBalance new balance of user account.
      */
-    void updateAccountBalance(int accountId, AccountBalance accountBalance);
+    void updateAccountBalance(int accountId, BigDecimal accountBalance);
 }

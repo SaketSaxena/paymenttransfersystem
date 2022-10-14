@@ -1,6 +1,5 @@
 package com.saketsaxena.paymenttransfersystem.service;
 
-import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,16 +27,17 @@ class AccountServiceInMemoryImplTest {
     }
 
     @Test
-    void should_get_account_balances() {
-        assertThat(accountServiceInMemoryImpl.getAccountBalances()).hasSize(2);
+    void should_get_user_account() {
+        assertThat(accountServiceInMemoryImpl.getUserAccount(111))
+                .extracting("accountId", "firstName", "lastName", "email", "balance")
+                .contains(111, "First", "Name", "abc@abc.com", new BigDecimal("100.10"));
     }
 
     @Test
     void should_update_account_balance(){
-        AccountBalance accountBalance = new AccountBalance(111, new BigDecimal("80"), "GBP");
-        accountServiceInMemoryImpl.updateAccountBalance(111, accountBalance);
+        accountServiceInMemoryImpl.updateAccountBalance(111, new BigDecimal("80"));
 
-        assertThat(accountServiceInMemoryImpl.getAccountBalances().get(111))
+        assertThat(accountServiceInMemoryImpl.getUserAccount(111))
                 .extracting("accountId", "balance", "currency")
                 .contains(111, new BigDecimal("80"), "GBP");
     }
