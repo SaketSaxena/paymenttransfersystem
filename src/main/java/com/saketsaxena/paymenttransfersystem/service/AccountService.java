@@ -2,6 +2,7 @@ package com.saketsaxena.paymenttransfersystem.service;
 
 import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 public interface AccountService {
@@ -16,7 +17,7 @@ public interface AccountService {
     /** Method to find out in the account is having insufficient balance.
      * @return boolean, true if balance is insufficient and false in balance is sufficient
      */
-    boolean isInsufficientBalance(int accountId);
+    boolean isInsufficientBalance(int accountId, BigDecimal amount);
 
     /**
      * To check if the account is present or not.

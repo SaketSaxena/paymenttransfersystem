@@ -46,7 +46,7 @@ public class PaymentTransferService {
             throw new InvalidAccountException(String.format("Invalid receiver account id %s", paymentTransfer.receiverAccountId()));
         } else if (!accountService.isValidAccount(paymentTransfer.senderAccountId())){
             throw new InvalidAccountException(String.format("Invalid sender account id %s", paymentTransfer.senderAccountId()));
-        } else if (accountService.isInsufficientBalance(paymentTransfer.senderAccountId())){
+        } else if (accountService.isInsufficientBalance(paymentTransfer.senderAccountId(), paymentTransfer.transferAmount())){
             throw new InsufficientBalanceException("You do not have sufficient balance to transfer fund");
         }
     }
