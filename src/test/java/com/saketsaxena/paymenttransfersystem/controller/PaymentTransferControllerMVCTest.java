@@ -29,7 +29,9 @@ public class PaymentTransferControllerMVCTest {
                         .post("/transfer-fund")
                         .content(new ObjectMapper().writeValueAsString(new PaymentTransfer(222, 111, new BigDecimal("20"))))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success-message")
+                        .value("Money has been successfully transferred to account 111"));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/accounts/{accountId}/balance", 222)
@@ -47,7 +49,9 @@ public class PaymentTransferControllerMVCTest {
                         .post("/transfer-fund")
                         .content(new ObjectMapper().writeValueAsString(new PaymentTransfer(222, 222, new BigDecimal("20"))))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error-message")
+                        .value("Sender and receiver id can not be the same"));
     }
 
     @Test
@@ -56,7 +60,9 @@ public class PaymentTransferControllerMVCTest {
                         .post("/transfer-fund")
                         .content(new ObjectMapper().writeValueAsString(new PaymentTransfer(333, 222, new BigDecimal("20"))))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error-message")
+                        .value("Invalid sender account id 333"));
     }
 
     @Test
@@ -65,6 +71,7 @@ public class PaymentTransferControllerMVCTest {
                         .post("/transfer-fund")
                         .content(new ObjectMapper().writeValueAsString(new PaymentTransfer(222, 111, new BigDecimal("2000"))))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest()).andExpect(MockMvcResultMatchers.jsonPath("$.error-message")
+                        .value("You do not have sufficient balance to transfer fund"));
     }
 }
