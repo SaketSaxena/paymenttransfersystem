@@ -57,7 +57,7 @@ public class PaymentTransferService {
      * @param receiverAccountId account id of the receiver
      * @param amount amount need to be credit
      */
-    private void creditFundToAccount(int receiverAccountId, BigDecimal amount) {
+    protected void creditFundToAccount(int receiverAccountId, BigDecimal amount) {
         AccountBalance existingBalance = accountService.getAccountBalances().get(receiverAccountId);
         AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
                 existingBalance.balance().add(amount), existingBalance.currency());
@@ -71,7 +71,7 @@ public class PaymentTransferService {
      * @param senderAccountId account id of the sender
      * @param amount amount need to debit
      */
-    private void debitFundFromAccount(int senderAccountId, BigDecimal amount) {
+    protected void debitFundFromAccount(int senderAccountId, BigDecimal amount) {
         AccountBalance existingBalance = accountService.getAccountBalances().get(senderAccountId);
         AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
                 existingBalance.balance().subtract(amount), existingBalance.currency());

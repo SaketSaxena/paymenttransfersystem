@@ -62,6 +62,12 @@ public class AccountBalanceControllerMVCTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[0].amount").value("20"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[0].currency").value("GBP"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[0].type").value("DEBIT"));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/transfer-fund")
+                        .content(new ObjectMapper().writeValueAsString(new PaymentTransfer(222, 111, new BigDecimal("20"))))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
