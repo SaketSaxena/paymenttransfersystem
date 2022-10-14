@@ -4,7 +4,7 @@ import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
 import com.saketsaxena.paymenttransfersystem.DTOs.PaymentTransfer;
 import com.saketsaxena.paymenttransfersystem.exception.InsufficientBalanceException;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
-import com.saketsaxena.paymenttransfersystem.helper.AccountStore;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,11 +19,12 @@ import static com.saketsaxena.paymenttransfersystem.DTOs.TransactionType.DEBIT;
 @Service
 public class PaymentTransferService {
 
-    private final AccountStore accountStore;
+    @Qualifier("accountServiceInMemoryImpl")
+    private final AccountService accountService;
     private final MiniStatementService miniStatementService;
 
-    public PaymentTransferService(AccountStore accountStore, MiniStatementService miniStatementService) {
-        this.accountStore = accountStore;
+    public PaymentTransferService(AccountService accountService, MiniStatementService miniStatementService) {
+        this.accountService = accountService;
         this.miniStatementService = miniStatementService;
     }
 
@@ -41,11 +42,11 @@ public class PaymentTransferService {
      * @param paymentTransfer An object representing details of payment transfer
      */
     private void validateRequest(PaymentTransfer paymentTransfer) {
-        if (!accountStore.isValidAccount(paymentTransfer.receiverAccountId())){
+        if (!accountService.isValidAccount(paymentTransfer.receiverAccountId())){
             throw new InvalidAccountException(String.format("Invalid receiver account id %s", paymentTransfer.receiverAccountId()));
-        } else if (!accountStore.isValidAccount(paymentTransfer.senderAccountId())){
+        } else if (!accountService.isValidAccount(paymentTransfer.senderAccountId())){
             throw new InvalidAccountException(String.format("Invalid sender account id %s", paymentTransfer.senderAccountId()));
-        } else if (accountStore.isInsufficientBalance(paymentTransfer.senderAccountId())){
+        } else if (accountService.isInsufficientBalance(paymentTransfer.senderAccountId())){
             throw new InsufficientBalanceException("You do not have sufficient balance to transfer fund");
         }
     }
@@ -57,10 +58,10 @@ public class PaymentTransferService {
      * @param amount amount need to be credit
      */
     private void creditFundToAccount(int receiverAccountId, BigDecimal amount) {
-        AccountBalance existingBalance = accountStore.getAccountBalances().get(receiverAccountId);
+        AccountBalance existingBalance = accountService.getAccountBalances().get(receiverAccountId);
         AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
                 existingBalance.balance().add(amount), existingBalance.currency());
-        accountStore.updateAccountBalance(receiverAccountId, newAccountBalance);
+        accountService.updateAccountBalance(receiverAccountId, newAccountBalance);
         miniStatementService.addTransactionToMiniStatement(receiverAccountId, amount, existingBalance.currency(), CREDIT);
     }
 
@@ -71,10 +72,10 @@ public class PaymentTransferService {
      * @param amount amount need to debit
      */
     private void debitFundFromAccount(int senderAccountId, BigDecimal amount) {
-        AccountBalance existingBalance = accountStore.getAccountBalances().get(senderAccountId);
+        AccountBalance existingBalance = accountService.getAccountBalances().get(senderAccountId);
         AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
                 existingBalance.balance().subtract(amount), existingBalance.currency());
-        accountStore.updateAccountBalance(senderAccountId, newAccountBalance);
+        accountService.updateAccountBalance(senderAccountId, newAccountBalance);
         miniStatementService.addTransactionToMiniStatement(senderAccountId, amount, existingBalance.currency(), DEBIT);
     }
 }

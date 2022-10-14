@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.HttpStatus.*;
 
+/** Controller to publish rest api to know balance and mini statement.
+ * @author Saket Saxena
+ * @since 1.0
+ */
 @RestController
 public class AccountBalanceController {
 
@@ -25,6 +29,11 @@ public class AccountBalanceController {
         this.miniStatementService = miniStatementService;
     }
 
+    /** Rest endpoint to get the balance for the account.
+     * @param accountId account id to get account balance
+     * @return A success response of object AccountBalance,
+     * not found in case of account is invalid with the ErrorResponse object
+     */
     @GetMapping("/accounts/{accountId}/balance")
     public ResponseEntity<?> getAccountBalance(@PathVariable int accountId){
         try {
@@ -35,6 +44,11 @@ public class AccountBalanceController {
         }
     }
 
+    /** Rest endpoint to get the mini statement for the account.
+     * @param accountId as path variable for which mini statement needs to be fetched.
+     * @return A response of object Queue<MiniStatement>,
+     * or object of ErrorResponse in case of account is invalid
+     */
     @GetMapping("/accounts/{accountId}/statements/mini")
     public ResponseEntity<?> getAccountMiniStatement(@PathVariable int accountId){
         try {
