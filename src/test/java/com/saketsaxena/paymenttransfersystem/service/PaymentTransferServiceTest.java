@@ -7,6 +7,8 @@ import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,9 +18,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.saketsaxena.paymenttransfersystem.DTOs.TransactionType.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +35,9 @@ class PaymentTransferServiceTest {
     private MiniStatementService miniStatementService;
     @InjectMocks
     private PaymentTransferService paymentTransferService;
+
+    @Captor
+    ArgumentCaptor<AccountBalance> accountBalanceArgumentCaptor;
 
     private final Map<Integer, AccountBalance> accountBalances = new HashMap<>();
 
@@ -81,5 +88,25 @@ class PaymentTransferServiceTest {
         PaymentTransfer paymentTransfer = new PaymentTransfer(111, 222, new BigDecimal("20"));
         assertThatExceptionOfType(InsufficientBalanceException.class)
                 .isThrownBy(() -> paymentTransferService.transferFund(paymentTransfer));
+    }
+
+    @Test
+    void should_credit_funds_to_account(){
+        when(accountServiceInMemoryImpl.getAccountBalances()).thenReturn(accountBalances);
+
+        paymentTransferService.creditFundToAccount(111, new BigDecimal("20"));
+        verify(accountServiceInMemoryImpl).updateAccountBalance(eq(111), accountBalanceArgumentCaptor.capture());
+        verify(miniStatementService).addTransactionToMiniStatement(111, new BigDecimal("20"), "GBP", CREDIT);
+        assertThat(accountBalanceArgumentCaptor.getValue().balance()).isEqualTo(new BigDecimal("120.10"));
+    }
+
+    @Test
+    void should_debit_funds_to_account(){
+        when(accountServiceInMemoryImpl.getAccountBalances()).thenReturn(accountBalances);
+
+        paymentTransferService.debitFundFromAccount(111, new BigDecimal("20"));
+        verify(accountServiceInMemoryImpl).updateAccountBalance(eq(111), accountBalanceArgumentCaptor.capture());
+        verify(miniStatementService).addTransactionToMiniStatement(111, new BigDecimal("20"), "GBP", DEBIT);
+        assertThat(accountBalanceArgumentCaptor.getValue().balance()).isEqualTo(new BigDecimal("80.10"));
     }
 }
