@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static com.saketsaxena.paymenttransfersystem.DTOs.TransactionType.*;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,7 +43,7 @@ class PaymentTransferServiceTest {
     @Test
     void should_transfer_fund_when_account_is_valid_and_fund_available() {
         when(accountServiceInMemoryImpl.isValidAccount(anyInt())).thenReturn(true);
-        when(accountServiceInMemoryImpl.isInsufficientBalance(anyInt())).thenReturn(false);
+        when(accountServiceInMemoryImpl.isInsufficientBalance(anyInt(), any(BigDecimal.class))).thenReturn(false);
         when(accountServiceInMemoryImpl.getAccountBalances()).thenReturn(accountBalances);
 
         PaymentTransfer paymentTransfer = new PaymentTransfer(111, 222, new BigDecimal("20"));
@@ -75,7 +76,7 @@ class PaymentTransferServiceTest {
     void should_not_transfer_fund_when_sender_has_insufficient_fund() {
         when(accountServiceInMemoryImpl.isValidAccount(222)).thenReturn(true);
         when(accountServiceInMemoryImpl.isValidAccount(111)).thenReturn(true);
-        when(accountServiceInMemoryImpl.isInsufficientBalance(111)).thenReturn(true);
+        when(accountServiceInMemoryImpl.isInsufficientBalance(111, new BigDecimal("20"))).thenReturn(true);
 
         PaymentTransfer paymentTransfer = new PaymentTransfer(111, 222, new BigDecimal("20"));
         assertThatExceptionOfType(InsufficientBalanceException.class)

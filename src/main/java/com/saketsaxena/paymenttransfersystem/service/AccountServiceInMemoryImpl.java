@@ -35,8 +35,8 @@ public class AccountServiceInMemoryImpl implements AccountService {
      * @return boolean, true if balance is insufficient and false in balance is sufficient
      */
     @Override
-    public boolean isInsufficientBalance(int accountId) {
-        return accountBalances.get(accountId).balance().compareTo(BigDecimal.ZERO) < 0;
+    public boolean isInsufficientBalance(int accountId, BigDecimal amount) {
+        return accountBalances.get(accountId).balance().compareTo(amount) < 0;
     }
 
     /**
