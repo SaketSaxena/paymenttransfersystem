@@ -4,7 +4,7 @@ import com.google.common.collect.EvictingQueue;
 import com.saketsaxena.paymenttransfersystem.DTOs.MiniStatement;
 import com.saketsaxena.paymenttransfersystem.DTOs.TransactionType;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
-import com.saketsaxena.paymenttransfersystem.helper.AccountStore;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,10 +25,11 @@ public class MiniStatementService {
      */
     public final Map<Integer, Queue<MiniStatement>> miniStatements = new HashMap<>();
 
-    private final AccountStore accountStore;
+    @Qualifier("accountServiceInMemoryImpl")
+    private final AccountService accountService;
 
-    public MiniStatementService(AccountStore accountStore) {
-        this.accountStore = accountStore;
+    public MiniStatementService(AccountServiceInMemoryImpl accountService) {
+        this.accountService = accountService;
     }
 
     /** add the transaction to mini statement.
@@ -48,7 +49,7 @@ public class MiniStatementService {
      * @return Queue of a MiniStatement of the object, holds only last 20 transaction.
      */
     public Queue<MiniStatement> getMiniStatement(int accountId){
-        if (accountStore.isValidAccount(accountId)) {
+        if (accountService.isValidAccount(accountId)) {
             return findAccountMiniStatement(accountId);
         } else {
             throw new InvalidAccountException(String.format("Account id %s is not valid", accountId));

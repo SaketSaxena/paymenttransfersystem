@@ -2,8 +2,8 @@ package com.saketsaxena.paymenttransfersystem.service;
 
 import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
-import com.saketsaxena.paymenttransfersystem.helper.AccountStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 /** Service to perform operation related to account balance .
@@ -13,11 +13,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class AccountBalanceService {
 
-    private final AccountStore accountStore;
+    @Qualifier("accountServiceInMemoryImpl")
+    private final AccountService accountService;
 
     @Autowired
-    public AccountBalanceService(AccountStore accountStore) {
-        this.accountStore = accountStore;
+    public AccountBalanceService(AccountServiceInMemoryImpl accountService) {
+        this.accountService = accountService;
     }
 
     /** Gets the account balance for the specified account id.
@@ -25,7 +26,7 @@ public class AccountBalanceService {
      * @return An object representing the AccountBalance
      */
     public AccountBalance getAccountBalance(int accountId) {
-      return accountStore.getAccountBalances().values().stream()
+      return accountService.getAccountBalances().values().stream()
                 .filter(accountBalance -> accountBalance.accountId() == accountId)
                 .findFirst()
                 .orElseThrow(() -> new InvalidAccountException(String.format("Account id %s is not valid", accountId)));

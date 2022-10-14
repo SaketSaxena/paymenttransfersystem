@@ -4,7 +4,6 @@ import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
 import com.saketsaxena.paymenttransfersystem.DTOs.PaymentTransfer;
 import com.saketsaxena.paymenttransfersystem.exception.InsufficientBalanceException;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
-import com.saketsaxena.paymenttransfersystem.helper.AccountStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +25,7 @@ import static org.mockito.Mockito.when;
 class PaymentTransferServiceTest {
 
     @Mock
-    private AccountStore accountStore;
+    private AccountServiceInMemoryImpl accountServiceInMemoryImpl;
     @Mock
     private MiniStatementService miniStatementService;
     @InjectMocks
@@ -42,9 +41,9 @@ class PaymentTransferServiceTest {
 
     @Test
     void should_transfer_fund_when_account_is_valid_and_fund_available() {
-        when(accountStore.isValidAccount(anyInt())).thenReturn(true);
-        when(accountStore.isInsufficientBalance(anyInt())).thenReturn(false);
-        when(accountStore.getAccountBalances()).thenReturn(accountBalances);
+        when(accountServiceInMemoryImpl.isValidAccount(anyInt())).thenReturn(true);
+        when(accountServiceInMemoryImpl.isInsufficientBalance(anyInt())).thenReturn(false);
+        when(accountServiceInMemoryImpl.getAccountBalances()).thenReturn(accountBalances);
 
         PaymentTransfer paymentTransfer = new PaymentTransfer(111, 222, new BigDecimal("20"));
         paymentTransferService.transferFund(paymentTransfer);
@@ -55,8 +54,8 @@ class PaymentTransferServiceTest {
 
     @Test
     void should_not_transfer_fund_when_sender_account_is_invalid() {
-        when(accountStore.isValidAccount(222)).thenReturn(true);
-        when(accountStore.isValidAccount(111)).thenReturn(false);
+        when(accountServiceInMemoryImpl.isValidAccount(222)).thenReturn(true);
+        when(accountServiceInMemoryImpl.isValidAccount(111)).thenReturn(false);
 
         PaymentTransfer paymentTransfer = new PaymentTransfer(111, 222, new BigDecimal("20"));
         assertThatExceptionOfType(InvalidAccountException.class)
@@ -65,7 +64,7 @@ class PaymentTransferServiceTest {
 
     @Test
     void should_not_transfer_fund_when_receiver_account_is_invalid() {
-        when(accountStore.isValidAccount(222)).thenReturn(false);
+        when(accountServiceInMemoryImpl.isValidAccount(222)).thenReturn(false);
 
         PaymentTransfer paymentTransfer = new PaymentTransfer(111, 222, new BigDecimal("20"));
         assertThatExceptionOfType(InvalidAccountException.class)
@@ -74,9 +73,9 @@ class PaymentTransferServiceTest {
 
     @Test
     void should_not_transfer_fund_when_sender_has_insufficient_fund() {
-        when(accountStore.isValidAccount(222)).thenReturn(true);
-        when(accountStore.isValidAccount(111)).thenReturn(true);
-        when(accountStore.isInsufficientBalance(111)).thenReturn(true);
+        when(accountServiceInMemoryImpl.isValidAccount(222)).thenReturn(true);
+        when(accountServiceInMemoryImpl.isValidAccount(111)).thenReturn(true);
+        when(accountServiceInMemoryImpl.isInsufficientBalance(111)).thenReturn(true);
 
         PaymentTransfer paymentTransfer = new PaymentTransfer(111, 222, new BigDecimal("20"));
         assertThatExceptionOfType(InsufficientBalanceException.class)
