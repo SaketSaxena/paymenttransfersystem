@@ -3,7 +3,6 @@ package com.saketsaxena.paymenttransfersystem.controller;
 import com.google.common.collect.EvictingQueue;
 import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
 import com.saketsaxena.paymenttransfersystem.DTOs.MiniStatement;
-import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
 import com.saketsaxena.paymenttransfersystem.service.AccountBalanceService;
 import com.saketsaxena.paymenttransfersystem.service.MiniStatementService;
 import org.junit.jupiter.api.Test;
@@ -16,11 +15,11 @@ import org.springframework.http.ResponseEntity;
 import java.math.BigDecimal;
 import java.util.Queue;
 
-import static com.saketsaxena.paymenttransfersystem.DTOs.TransactionType.*;
-import static java.time.ZonedDateTime.*;
+import static com.saketsaxena.paymenttransfersystem.DTOs.TransactionType.DEBIT;
+import static java.time.ZonedDateTime.now;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
 class AccountBalanceControllerTest {
@@ -45,17 +44,6 @@ class AccountBalanceControllerTest {
     }
 
     @Test
-    void should_get_error_message_if_account_balance_is_invalid(){
-        when(accountBalanceService.getAccountBalance(100))
-                .thenThrow(new InvalidAccountException("Account id 100 is not valid"));
-
-        ResponseEntity<?> response = accountBalanceController.getAccountBalance(100);
-        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
-        assertThat(response.getBody())
-                .extracting("errorMessage").isEqualTo("Account id 100 is not valid");
-    }
-
-    @Test
     void should_get_mini_statement_if_account_id_is_valid(){
         Queue<MiniStatement> miniStatements = EvictingQueue.create(20);
         miniStatements.add(new MiniStatement(111, new BigDecimal("20"), "GBP", DEBIT, now()));
@@ -70,16 +58,5 @@ class AccountBalanceControllerTest {
                 statement -> assertThat(statement)
                         .extracting("accountId", "amount", "currency", "type")
                         .contains(111, new BigDecimal("20"), "GBP", DEBIT));
-    }
-
-    @Test
-    void should_get_error_message_if_account_balance_is_invalid_while_getting_mini_statement(){
-        when(miniStatementService.getMiniStatement(100))
-                .thenThrow(new InvalidAccountException("Account id 100 is not valid"));
-
-        ResponseEntity<?> response = accountBalanceController.getAccountMiniStatement(100);
-        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
-        assertThat(response.getBody())
-                .extracting("errorMessage").isEqualTo("Account id 100 is not valid");
     }
 }
