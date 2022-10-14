@@ -4,7 +4,7 @@ package com.saketsaxena.paymenttransfersystem.exception;
  * @author Saket Saxena
  * @since 1.0
  */
-public class InsufficientBalanceException extends RuntimeException{
+public class InsufficientBalanceException extends BadRequestException{
 
     /** Creates an insufficient balance exception with the specified message.
      * @param message exception error message.

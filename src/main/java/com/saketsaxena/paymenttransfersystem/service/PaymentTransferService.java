@@ -2,6 +2,7 @@ package com.saketsaxena.paymenttransfersystem.service;
 
 import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
 import com.saketsaxena.paymenttransfersystem.DTOs.PaymentTransfer;
+import com.saketsaxena.paymenttransfersystem.exception.BadRequestException;
 import com.saketsaxena.paymenttransfersystem.exception.InsufficientBalanceException;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,7 +43,9 @@ public class PaymentTransferService {
      * @param paymentTransfer An object representing details of payment transfer
      */
     private void validateRequest(PaymentTransfer paymentTransfer) {
-        if (!accountService.isValidAccount(paymentTransfer.receiverAccountId())){
+        if (paymentTransfer.senderAccountId() == paymentTransfer.receiverAccountId()){
+          throw new BadRequestException("Sender and receiver id can not be the same");
+        } else if (!accountService.isValidAccount(paymentTransfer.receiverAccountId())){
             throw new InvalidAccountException(String.format("Invalid receiver account id %s", paymentTransfer.receiverAccountId()));
         } else if (!accountService.isValidAccount(paymentTransfer.senderAccountId())){
             throw new InvalidAccountException(String.format("Invalid sender account id %s", paymentTransfer.senderAccountId()));
