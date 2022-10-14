@@ -1,5 +1,6 @@
 package com.saketsaxena.paymenttransfersystem.controller;
 
+import com.saketsaxena.paymenttransfersystem.DTOs.FundTransferSuccess;
 import com.saketsaxena.paymenttransfersystem.DTOs.PaymentTransfer;
 import com.saketsaxena.paymenttransfersystem.service.PaymentTransferService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class PaymentTransferController {
     @PostMapping("/transfer-fund")
     public ResponseEntity<?> transferFund(@RequestBody PaymentTransfer paymentTransfer) {
         paymentTransferService.transferFund(paymentTransfer);
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .ok(new FundTransferSuccess(String.format("Money has been successfully transferred to account %s", paymentTransfer.receiverAccountId())));
     }
 }

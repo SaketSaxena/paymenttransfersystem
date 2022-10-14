@@ -42,7 +42,7 @@ public class AccountBalanceControllerMVCTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Account id 100 is not valid"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error-message").value("Account id 100 is not valid"));
     }
 
     @Test
@@ -77,6 +77,6 @@ public class AccountBalanceControllerMVCTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Account id 100 is not valid"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error-message").value("Account id 100 is not valid"));
     }
 }
