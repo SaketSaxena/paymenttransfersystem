@@ -35,7 +35,7 @@ public class PaymentTransferController {
      * bad request in case of insufficient fund.
      */
     @PostMapping("/transfer-fund")
-    public ResponseEntity<?> transferFund(@RequestBody PaymentTransfer paymentTransfer) {
+    public ResponseEntity<FundTransferSuccess> transferFund(@RequestBody PaymentTransfer paymentTransfer) {
         paymentTransferService.transferFund(paymentTransfer);
         return ResponseEntity
                 .ok(new FundTransferSuccess(String.format("Money has been successfully transferred to account %s", paymentTransfer.receiverAccountId())));
