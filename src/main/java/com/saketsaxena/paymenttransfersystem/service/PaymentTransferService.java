@@ -1,7 +1,7 @@
 package com.saketsaxena.paymenttransfersystem.service;
 
-import com.saketsaxena.paymenttransfersystem.DTOs.AccountBalance;
 import com.saketsaxena.paymenttransfersystem.DTOs.PaymentTransfer;
+import com.saketsaxena.paymenttransfersystem.DTOs.UserAccount;
 import com.saketsaxena.paymenttransfersystem.exception.BadRequestException;
 import com.saketsaxena.paymenttransfersystem.exception.InsufficientBalanceException;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
@@ -61,11 +61,9 @@ public class PaymentTransferService {
      * @param amount amount need to be credit
      */
     protected void creditFundToAccount(int receiverAccountId, BigDecimal amount) {
-        AccountBalance existingBalance = accountService.getAccountBalances().get(receiverAccountId);
-        AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
-                existingBalance.balance().add(amount), existingBalance.currency());
-        accountService.updateAccountBalance(receiverAccountId, newAccountBalance);
-        miniStatementService.addTransactionToMiniStatement(receiverAccountId, amount, existingBalance.currency(), CREDIT);
+        UserAccount userAccount = accountService.getUserAccount(receiverAccountId);
+        accountService.updateAccountBalance(receiverAccountId, userAccount.balance().add(amount));
+        miniStatementService.addTransactionToMiniStatement(receiverAccountId, amount, userAccount.currency(), CREDIT);
     }
 
     /**
@@ -75,10 +73,8 @@ public class PaymentTransferService {
      * @param amount amount need to debit
      */
     protected void debitFundFromAccount(int senderAccountId, BigDecimal amount) {
-        AccountBalance existingBalance = accountService.getAccountBalances().get(senderAccountId);
-        AccountBalance newAccountBalance = new AccountBalance(existingBalance.accountId(),
-                existingBalance.balance().subtract(amount), existingBalance.currency());
-        accountService.updateAccountBalance(senderAccountId, newAccountBalance);
-        miniStatementService.addTransactionToMiniStatement(senderAccountId, amount, existingBalance.currency(), DEBIT);
+        UserAccount userAccount = accountService.getUserAccount(senderAccountId);
+        accountService.updateAccountBalance(senderAccountId, userAccount.balance().subtract(amount));
+        miniStatementService.addTransactionToMiniStatement(senderAccountId, amount, userAccount.currency(), DEBIT);
     }
 }
