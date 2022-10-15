@@ -30,7 +30,7 @@ public class RestExceptionResolver {
      * @return bad request response if sender account is not having sufficient balance,
      * or sender-account-id and receiver-account-id is same.
      */
-    @ExceptionHandler({BadRequestException.class, InsufficientBalanceException.class})
+    @ExceptionHandler({BadRequestException.class, InsufficientBalanceException.class, AccountAlreadyExists.class})
     public ResponseEntity<ErrorResponse> handleInsufficientBalanceException(BadRequestException badRequestException){
         ErrorResponse errorResponse = new ErrorResponse(badRequestException.getMessage());
         return ResponseEntity.status(BAD_REQUEST).body(errorResponse);

@@ -15,10 +15,19 @@ public class AccountServiceInMemoryImpl implements AccountService {
 
     /** Represents the map of all the user account.
      */
-    private final Map<Integer, UserAccount> userAccount = new HashMap<>();
+    private final Map<Integer, UserAccount> userAccounts = new HashMap<>();
     public AccountServiceInMemoryImpl() {
-        userAccount.put(111, new UserAccount(111, "First", "Name", new BigDecimal("100.10"), "GBP", "abc@abc.com", "street1"));
-        userAccount.put(222, new UserAccount(222, "John", "Wick", new BigDecimal("324.45"), "GBP", "def@abc.com", "street2"));
+        userAccounts.put(111, new UserAccount(111, "First", "Name", new BigDecimal("100.10"), "GBP", "abc@abc.com", "street1"));
+        userAccounts.put(222, new UserAccount(222, "John", "Wick", new BigDecimal("324.45"), "GBP", "def@abc.com", "street2"));
+    }
+
+    /**
+     * Crate User account with specified account details.
+     * @param userAccount Representation of UserAccount object.
+     */
+    @Override
+    public void createUserAccount(UserAccount userAccount) {
+        userAccounts.put(userAccount.accountId(), userAccount);
     }
 
     /**
@@ -28,7 +37,7 @@ public class AccountServiceInMemoryImpl implements AccountService {
      */
     @Override
     public UserAccount getUserAccount(int accountId) {
-        return userAccount.get(accountId);
+        return userAccounts.get(accountId);
     }
 
     /** Method to find out in the account is having insufficient balance.
@@ -38,7 +47,7 @@ public class AccountServiceInMemoryImpl implements AccountService {
      */
     @Override
     public boolean isInsufficientBalance(int accountId, BigDecimal amount) {
-        return userAccount.get(accountId).balance().compareTo(amount) < 0;
+        return userAccounts.get(accountId).balance().compareTo(amount) < 0;
     }
 
     /**
@@ -48,7 +57,7 @@ public class AccountServiceInMemoryImpl implements AccountService {
      */
     @Override
     public boolean isValidAccount(int accountId) {
-        return Optional.ofNullable(userAccount.get(accountId)).isPresent();
+        return Optional.ofNullable(userAccounts.get(accountId)).isPresent();
     }
 
     /**
@@ -58,9 +67,9 @@ public class AccountServiceInMemoryImpl implements AccountService {
      */
     @Override
     public void updateAccountBalance(int accountId, BigDecimal accountBalance){
-        UserAccount updateUserAccount = userAccount.get(accountId);
+        UserAccount updateUserAccount = userAccounts.get(accountId);
         updateUserAccount.setBalance(accountBalance);
-        userAccount.put(accountId, updateUserAccount);
+        userAccounts.put(accountId, updateUserAccount);
     }
 
 }

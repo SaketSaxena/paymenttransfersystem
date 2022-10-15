@@ -7,6 +7,12 @@ import java.math.BigDecimal;
 public interface AccountService {
 
     /**
+     * Crate User account with specified account details.
+     * @param userAccount Representation of UserAccount object.
+     */
+    void createUserAccount(UserAccount userAccount);
+
+    /**
      * Get User account for specified accountId.
      * @param accountId account id of the user
      * @return object of UserAccount.

@@ -1,5 +1,6 @@
 package com.saketsaxena.paymenttransfersystem.service;
 
+import com.saketsaxena.paymenttransfersystem.DTOs.UserAccount;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,6 +41,16 @@ class AccountServiceInMemoryImplTest {
         assertThat(accountServiceInMemoryImpl.getUserAccount(111))
                 .extracting("accountId", "balance", "currency")
                 .contains(111, new BigDecimal("80"), "GBP");
+    }
+
+    @Test
+    void should_create_new_user_account(){
+        UserAccount newUserAccount = new UserAccount(333, "First", "Name", new BigDecimal("100.10"), "GBP", "abc@abc.com", "street1");
+        accountServiceInMemoryImpl.createUserAccount(newUserAccount);
+
+        assertThat(accountServiceInMemoryImpl.getUserAccount(333))
+                .extracting("accountId", "firstName", "lastName", "email", "balance")
+                .contains(333, "First", "Name", "abc@abc.com", new BigDecimal("100.10"));
     }
 
 }
