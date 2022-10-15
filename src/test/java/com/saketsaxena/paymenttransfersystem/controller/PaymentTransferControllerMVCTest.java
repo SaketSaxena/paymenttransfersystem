@@ -41,6 +41,14 @@ public class PaymentTransferControllerMVCTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.account-id").value(222))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.balance").value("304.45"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.currency").value("GBP"));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/transfer-fund")
+                        .content(new ObjectMapper().writeValueAsString(new PaymentTransfer(111, 222, new BigDecimal("20"))))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success-message")
+                        .value("Money has been successfully transferred to account 222"));
     }
 
     @Test
