@@ -13,9 +13,10 @@ import java.util.Objects;
 public class UserAccount {
     /** Represents the user's account id.*/
     @JsonIgnore
+    @JsonProperty("account-id")
     private final int accountId;
     /** Represents the user's first name.*/
-    @JsonProperty("first_name")
+    @JsonProperty("first-name")
     private final String firstName;
     /** Represents the user's last name.*/
     @JsonProperty("last-name")
@@ -25,10 +26,13 @@ public class UserAccount {
     private BigDecimal balance;
     /** Represents the user's balance amount currency.*/
     @JsonIgnore
+    @JsonProperty("currency")
     private final String currency;
     /** Represents the user's email.*/
+    @JsonProperty("email")
     private final String email;
     /** Represents the user's address.*/
+    @JsonProperty("address")
     private final String address;
 
     /** Creates an UserAccount.
@@ -40,12 +44,8 @@ public class UserAccount {
      * @param email The user’s email.
      * @param address The user’s address.
      */
-    public UserAccount(int accountId,
-                       @JsonProperty("first_name") String firstName,
-                       @JsonProperty("last-name") String lastName,
-                       @JsonProperty("balance") BigDecimal balance,
-                       String currency,
-                       String email, String address) {
+    public UserAccount(int accountId, String firstName, String lastName,
+                       BigDecimal balance, String currency, String email, String address) {
         this.accountId = accountId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -58,7 +58,6 @@ public class UserAccount {
     /** Gets the user’s account id.
      * @return A int representing the user’s account id.
      */
-    @JsonIgnore
     public int accountId() {
         return accountId;
     }
@@ -66,7 +65,6 @@ public class UserAccount {
     /** Gets the user’s account balance.
      * @return A BigDecimal representing the user’s account balance.
      */
-    @JsonProperty("balance")
     public BigDecimal balance() {
         return balance;
     }
@@ -74,7 +72,6 @@ public class UserAccount {
     /** Gets the user’s account balance currency.
      * @return A String representing the user’s account balance currency.
      */
-    @JsonIgnore
     public String currency() {
         return currency;
     }

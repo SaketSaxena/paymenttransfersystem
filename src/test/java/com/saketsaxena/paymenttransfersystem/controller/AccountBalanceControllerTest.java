@@ -36,7 +36,7 @@ class AccountBalanceControllerTest {
         when(accountBalanceService.getAccountBalance(111))
                 .thenReturn(new AccountBalance(111, new BigDecimal("100.10"), "GBP"));
 
-        ResponseEntity<?> response = accountBalanceController.getAccountBalance(111);
+        ResponseEntity<AccountBalance> response = accountBalanceController.getAccountBalance(111);
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody())
                 .extracting("accountId", "balance", "currency")
@@ -50,11 +50,10 @@ class AccountBalanceControllerTest {
         when(miniStatementService.getMiniStatement(111))
                 .thenReturn(miniStatements);
 
-        ResponseEntity<?> response = accountBalanceController.getAccountMiniStatement(111);
+        ResponseEntity<Queue<MiniStatement>> response = accountBalanceController.getAccountMiniStatement(111);
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        Queue<MiniStatement> miniStatement = (Queue<MiniStatement>) response.getBody();
-        assertThat(miniStatement).isNotNull();
-        miniStatement.forEach(
+        assertThat(response.getBody()).isNotNull();
+        response.getBody().forEach(
                 statement -> assertThat(statement)
                         .extracting("accountId", "amount", "currency", "type")
                         .contains(111, new BigDecimal("20"), "GBP", DEBIT));
