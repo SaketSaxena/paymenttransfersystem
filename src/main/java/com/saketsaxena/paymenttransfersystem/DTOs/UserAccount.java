@@ -32,6 +32,9 @@ public class UserAccount {
     /** Represents the user's address.*/
     @JsonProperty("address")
     private final String address;
+    /** Represents the user's account status (ACTIVE/DELETED).*/
+    @JsonProperty("status")
+    private AccountStatus status;
 
     /** Creates an UserAccount.
      * @param accountId user's account id.
@@ -51,6 +54,7 @@ public class UserAccount {
         this.currency = Optional.ofNullable(currency).orElse("GBP");
         this.email = email;
         this.address = address;
+        this.status = AccountStatus.ACTIVE;
     }
 
     /** Gets the user’s account id.
@@ -79,6 +83,20 @@ public class UserAccount {
      */
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
+    }
+
+    /** Gets the user’s account status.
+     * @return represents the user’s account status.
+     */
+    public AccountStatus getStatus() {
+        return status;
+    }
+
+    /** Sets the user’s account status.
+     * @param status takes user account status in AccountStatus.
+     */
+    public void setStatus(AccountStatus status) {
+        this.status = status;
     }
 
     /** equals implementation of user account object*/

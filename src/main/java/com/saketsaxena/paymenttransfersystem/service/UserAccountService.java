@@ -2,11 +2,13 @@ package com.saketsaxena.paymenttransfersystem.service;
 
 import com.saketsaxena.paymenttransfersystem.DTOs.UserAccount;
 import com.saketsaxena.paymenttransfersystem.exception.AccountAlreadyExists;
+import com.saketsaxena.paymenttransfersystem.exception.BadRequestException;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 /**
@@ -47,5 +49,19 @@ public class UserAccountService {
             throw new AccountAlreadyExists(String.format("Account with id %s already exists", userAccount.accountId()));
         }
         accountService.createUserAccount(userAccount);
+    }
+
+    /**
+     * close user account for specified account id.
+     * @param accountId account id of account which needs to deleted.
+     */
+    public void closeUserAccount(int accountId) {
+        Optional<UserAccount> userAccount = Optional.ofNullable(accountService.getUserAccount(accountId));
+        if (userAccount.isEmpty()){
+            throw new InvalidAccountException(String.format("Account id %s is not valid",accountId));
+        } else if (accountService.getUserAccount(accountId).balance().compareTo(BigDecimal.ZERO) > 0 ){
+            throw new BadRequestException("Please transfer the funds from this account before closing");
+        }
+        accountService.closeAccount(accountId);
     }
 }
