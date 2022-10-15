@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +35,17 @@ class UserAccountControllerTest {
         assertThat(response.getBody())
                 .extracting("accountId", "firstName", "lastName", "balance", "currency", "email", "address")
                 .contains(111,"First", "Name", new BigDecimal("100"), "GBP", "abc@abc.com", "street1");
+
+    }
+
+    @Test
+    void should_create_new_user_account(){
+        UserAccount userAccount = new UserAccount(111,"First", "Name", new BigDecimal("100"),
+                "GBP", "abc@abc.com", "street1");
+
+        ResponseEntity<?> response = userAccountController.createNewUserAccount(userAccount);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        verify(userAccountService).createUserAccount(userAccount);
 
     }
 }
