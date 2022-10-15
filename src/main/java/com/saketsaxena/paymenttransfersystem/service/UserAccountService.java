@@ -1,6 +1,7 @@
 package com.saketsaxena.paymenttransfersystem.service;
 
 import com.saketsaxena.paymenttransfersystem.DTOs.UserAccount;
+import com.saketsaxena.paymenttransfersystem.exception.AccountAlreadyExists;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,5 +35,17 @@ public class UserAccountService {
     public UserAccount getUserAccount(int accountId) {
         return Optional.ofNullable(accountService.getUserAccount(accountId))
                 .orElseThrow(() -> new InvalidAccountException(String.format("Account id %s is invalid", accountId)));
+    }
+
+    /**
+     * Crate User account with specified account details.
+     * @param userAccount Representation of UserAccount object.
+     */
+    public void createUserAccount(UserAccount userAccount) {
+        Optional<UserAccount> account = Optional.ofNullable(accountService.getUserAccount(userAccount.accountId()));
+        if(account.isPresent()){
+            throw new AccountAlreadyExists(String.format("Account with id %s already exists", userAccount.accountId()));
+        }
+        accountService.createUserAccount(userAccount);
     }
 }
