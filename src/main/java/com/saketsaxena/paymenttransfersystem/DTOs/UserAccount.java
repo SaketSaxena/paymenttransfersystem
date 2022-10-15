@@ -12,7 +12,6 @@ import java.util.Objects;
  */
 public class UserAccount {
     /** Represents the user's account id.*/
-    @JsonIgnore
     @JsonProperty("account-id")
     private final int accountId;
     /** Represents the user's first name.*/
@@ -25,7 +24,6 @@ public class UserAccount {
     @JsonProperty("balance")
     private BigDecimal balance;
     /** Represents the user's balance amount currency.*/
-    @JsonIgnore
     @JsonProperty("currency")
     private final String currency;
     /** Represents the user's email.*/
