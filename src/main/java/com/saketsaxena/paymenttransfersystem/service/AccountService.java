@@ -3,6 +3,7 @@ package com.saketsaxena.paymenttransfersystem.service;
 import com.saketsaxena.paymenttransfersystem.DTOs.UserAccount;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public interface AccountService {
 
@@ -13,11 +14,19 @@ public interface AccountService {
     void createUserAccount(UserAccount userAccount);
 
     /**
+     * Get only active User account for specified accountId.
+     * @param accountId account id of the user
+     * @return option object of UserAccount.
+     */
+    Optional<UserAccount> getActiveUserAccount(int accountId);
+
+
+    /**
      * Get User account for specified accountId.
      * @param accountId account id of the user
-     * @return object of UserAccount.
+     * @return Optional object of UserAccount.
      */
-    UserAccount getUserAccount(int accountId);
+    Optional<UserAccount> getUserAccount(int accountId);
 
     /** Method to find out in the account is having insufficient balance.
      * @param accountId account id for which balance needs to be found.

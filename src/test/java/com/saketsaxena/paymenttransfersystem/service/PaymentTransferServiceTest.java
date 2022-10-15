@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.saketsaxena.paymenttransfersystem.DTOs.TransactionType.*;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -45,8 +46,8 @@ class PaymentTransferServiceTest {
     void should_transfer_fund_when_account_is_valid_and_fund_available() {
         when(accountServiceInMemoryImpl.isValidAccount(anyInt())).thenReturn(true);
         when(accountServiceInMemoryImpl.isInsufficientBalance(anyInt(), any(BigDecimal.class))).thenReturn(false);
-        when(accountServiceInMemoryImpl.getUserAccount(111)).thenReturn(userAccount.get(111));
-        when(accountServiceInMemoryImpl.getUserAccount(222)).thenReturn(userAccount.get(222));
+        when(accountServiceInMemoryImpl.getUserAccount(111)).thenReturn(Optional.of(userAccount.get(111)));
+        when(accountServiceInMemoryImpl.getUserAccount(222)).thenReturn(Optional.of(userAccount.get(222)));
 
         PaymentTransfer paymentTransfer = new PaymentTransfer(111, 222, new BigDecimal("20"));
         paymentTransferService.transferFund(paymentTransfer);
@@ -94,7 +95,7 @@ class PaymentTransferServiceTest {
 
     @Test
     void should_credit_funds_to_account(){
-        when(accountServiceInMemoryImpl.getUserAccount(111)).thenReturn(userAccount.get(111));
+        when(accountServiceInMemoryImpl.getUserAccount(111)).thenReturn(Optional.of(userAccount.get(111)));
 
         paymentTransferService.creditFundToAccount(111, new BigDecimal("20"));
         verify(accountServiceInMemoryImpl).updateAccountBalance(111, new BigDecimal("120.10"));
@@ -103,7 +104,7 @@ class PaymentTransferServiceTest {
 
     @Test
     void should_debit_funds_to_account(){
-        when(accountServiceInMemoryImpl.getUserAccount(111)).thenReturn(userAccount.get(111));
+        when(accountServiceInMemoryImpl.getUserAccount(111)).thenReturn(Optional.of(userAccount.get(111)));
 
         paymentTransferService.debitFundFromAccount(111, new BigDecimal("20"));
         verify(accountServiceInMemoryImpl).updateAccountBalance(111, new BigDecimal("80.10"));

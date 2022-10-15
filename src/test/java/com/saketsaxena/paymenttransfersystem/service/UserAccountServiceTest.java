@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 
+import static java.util.Optional.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
@@ -27,9 +28,10 @@ class UserAccountServiceTest {
 
     @Test
     void should_get_user_account_details() {
+        UserAccount userAccount = new UserAccount(111, "First", "Name", new BigDecimal("100"),
+                "GBP", "abc@abc.com", "street1");
         when(accountService.getUserAccount(111))
-                .thenReturn(new UserAccount(111,"First", "Name", new BigDecimal("100"),
-                        "GBP", "abc@abc.com", "street1"));
+                .thenReturn(of(userAccount));
 
         assertThat(userAccountService.getUserAccount(111))
                 .extracting("accountId", "firstName", "lastName", "balance", "currency", "email", "address")
@@ -59,7 +61,7 @@ class UserAccountServiceTest {
     void should_not_create_user_account_if_same_account_id_is_already_present(){
         UserAccount userAccount = new UserAccount(333,"First", "Name", new BigDecimal("100"),
                 "GBP", "abc@abc.com", "street1");
-        when(accountService.getUserAccount(333)).thenReturn(userAccount);
+        when(accountService.getUserAccount(333)).thenReturn(of(userAccount));
 
         assertThatExceptionOfType(AccountAlreadyExists.class)
                 .isThrownBy(() ->  userAccountService.createUserAccount(userAccount))
@@ -70,7 +72,7 @@ class UserAccountServiceTest {
     void should_close_user_account(){
         UserAccount userAccount = new UserAccount(333,"First", "Name", BigDecimal.ZERO,
                 "GBP", "abc@abc.com", "street1");
-        when(accountService.getUserAccount(333)).thenReturn(userAccount);
+        when(accountService.getUserAccount(333)).thenReturn(of(userAccount));
         userAccountService.closeUserAccount(333);
 
         verify(accountService).closeAccount(333);

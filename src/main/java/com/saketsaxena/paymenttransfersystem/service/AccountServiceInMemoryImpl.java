@@ -20,6 +20,7 @@ public class AccountServiceInMemoryImpl implements AccountService {
     public AccountServiceInMemoryImpl() {
         userAccounts.put(111, new UserAccount(111, "First", "Name", new BigDecimal("100.10"), "GBP", "abc@abc.com", "street1"));
         userAccounts.put(222, new UserAccount(222, "John", "Wick", new BigDecimal("324.45"), "GBP", "def@abc.com", "street2"));
+        userAccounts.put(786, new UserAccount(786, "John", "Wick", new BigDecimal("324.45"), "GBP", "def@abc.com", "street2"));
     }
 
     /**
@@ -34,11 +35,22 @@ public class AccountServiceInMemoryImpl implements AccountService {
     /**
      * Get User account for specified accountId.
      * @param accountId account id of the user
-     * @return object of UserAccount.
+     * @return Optional object of UserAccount.
      */
     @Override
-    public UserAccount getUserAccount(int accountId) {
-        return userAccounts.get(accountId);
+    public Optional<UserAccount> getUserAccount(int accountId) {
+        return Optional.ofNullable(userAccounts.get(accountId));
+    }
+
+    /**
+     * Get only active User account for specified accountId.
+     * @param accountId account id of the user
+     * @return Optional object of UserAccount.
+     */
+    @Override
+    public Optional<UserAccount> getActiveUserAccount(int accountId) {
+        return Optional.ofNullable(userAccounts.get(accountId))
+                .filter(userAccount -> userAccount.getStatus() == AccountStatus.ACTIVE);
     }
 
     /** Method to find out in the account is having insufficient balance.
@@ -53,12 +65,12 @@ public class AccountServiceInMemoryImpl implements AccountService {
 
     /**
      * To check if the account is present or not.
-     * @return A boolean, true if account is present in the system
+     * @return A boolean, true if account is present and active in the system
      * and false is it is not present.
      */
     @Override
     public boolean isValidAccount(int accountId) {
-        return Optional.ofNullable(userAccounts.get(accountId)).isPresent();
+        return getActiveUserAccount(accountId).isPresent();
     }
 
     /**
