@@ -25,13 +25,20 @@ class AccountServiceInMemoryImplTest {
     }
 
     @Test
-    void should_return_false_if_account_is_invalid() {
+    void should_return_false_if_account_is_not_present_in_the_sysyem() {
         assertFalse(accountServiceInMemoryImpl.isValidAccount(1111));
     }
 
     @Test
+    void should_return_false_if_account_is_deleted() {
+        accountServiceInMemoryImpl.closeAccount(786);
+        assertFalse(accountServiceInMemoryImpl.isValidAccount(786));
+    }
+
+    @Test
     void should_get_user_account() {
-        assertThat(accountServiceInMemoryImpl.getUserAccount(111))
+        assertThat(accountServiceInMemoryImpl.getUserAccount(111)).isPresent()
+                .get()
                 .extracting("accountId", "firstName", "lastName", "email", "balance")
                 .contains(111, "First", "Name", "abc@abc.com", new BigDecimal("100.10"));
     }
@@ -40,7 +47,8 @@ class AccountServiceInMemoryImplTest {
     void should_update_account_balance(){
         accountServiceInMemoryImpl.updateAccountBalance(111, new BigDecimal("80"));
 
-        assertThat(accountServiceInMemoryImpl.getUserAccount(111))
+        assertThat(accountServiceInMemoryImpl.getUserAccount(111)).isPresent()
+                .get()
                 .extracting("accountId", "balance", "currency")
                 .contains(111, new BigDecimal("80"), "GBP");
     }
@@ -50,7 +58,8 @@ class AccountServiceInMemoryImplTest {
         UserAccount newUserAccount = new UserAccount(333, "First", "Name", new BigDecimal("100.10"), "GBP", "abc@abc.com", "street1");
         accountServiceInMemoryImpl.createUserAccount(newUserAccount);
 
-        assertThat(accountServiceInMemoryImpl.getUserAccount(333))
+        assertThat(accountServiceInMemoryImpl.getUserAccount(333)).isPresent()
+                .get()
                 .extracting("accountId", "firstName", "lastName", "email", "balance")
                 .contains(333, "First", "Name", "abc@abc.com", new BigDecimal("100.10"));
     }
@@ -61,13 +70,15 @@ class AccountServiceInMemoryImplTest {
 
         accountServiceInMemoryImpl.createUserAccount(newUserAccount);
 
-        assertThat(accountServiceInMemoryImpl.getUserAccount(333))
+        assertThat(accountServiceInMemoryImpl.getUserAccount(333)).isPresent()
+                .get()
                 .extracting("accountId", "firstName", "lastName", "email", "balance", "status")
                 .contains(333, "First", "Name", "abc@abc.com", new BigDecimal("100.10"), ACTIVE);
 
         accountServiceInMemoryImpl.closeAccount(333);
 
-        assertThat(accountServiceInMemoryImpl.getUserAccount(333))
+        assertThat(accountServiceInMemoryImpl.getUserAccount(333)).isPresent()
+                .get()
                 .extracting("accountId", "firstName", "lastName", "email", "balance", "status")
                 .contains(333, "First", "Name", "abc@abc.com", new BigDecimal("100.10"), DELETED);
 

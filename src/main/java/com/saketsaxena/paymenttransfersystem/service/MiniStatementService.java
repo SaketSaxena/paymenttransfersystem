@@ -49,11 +49,9 @@ public class MiniStatementService {
      * @return Queue of a MiniStatement of the object, holds only last 20 transaction.
      */
     public Queue<MiniStatement> getMiniStatement(int accountId){
-        if (accountService.isValidAccount(accountId)) {
-            return findAccountMiniStatement(accountId);
-        } else {
-            throw new InvalidAccountException(String.format("Account id %s is not valid", accountId));
-        }
+        return accountService.getActiveUserAccount(accountId)
+                .map(userAccount -> findAccountMiniStatement(userAccount.accountId()))
+                .orElseThrow(() -> new InvalidAccountException(String.format("Account id %s is not valid", accountId)));
     }
 
 
