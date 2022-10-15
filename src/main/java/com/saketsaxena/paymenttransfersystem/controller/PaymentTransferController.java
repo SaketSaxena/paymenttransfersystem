@@ -1,6 +1,6 @@
 package com.saketsaxena.paymenttransfersystem.controller;
 
-import com.saketsaxena.paymenttransfersystem.DTOs.FundTransferSuccess;
+import com.saketsaxena.paymenttransfersystem.DTOs.SuccessMessage;
 import com.saketsaxena.paymenttransfersystem.DTOs.PaymentTransfer;
 import com.saketsaxena.paymenttransfersystem.service.PaymentTransferService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +35,9 @@ public class PaymentTransferController {
      * bad request in case of insufficient fund.
      */
     @PostMapping("/transfer-fund")
-    public ResponseEntity<FundTransferSuccess> transferFund(@RequestBody PaymentTransfer paymentTransfer) {
+    public ResponseEntity<SuccessMessage> transferFund(@RequestBody PaymentTransfer paymentTransfer) {
         paymentTransferService.transferFund(paymentTransfer);
         return ResponseEntity
-                .ok(new FundTransferSuccess(String.format("Money has been successfully transferred to account %s", paymentTransfer.receiverAccountId())));
+                .ok(new SuccessMessage(String.format("Money has been successfully transferred to account %s", paymentTransfer.receiverAccountId())));
     }
 }
