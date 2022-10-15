@@ -40,12 +40,26 @@ public class UserAccountController {
      * Rest endpoint to create new user account.
      *
      * @param userAccount A representation of UserAccount object.
-     * @return A success response of object UserAccount,
-     * not found in case of account is invalid with the ErrorResponse object
+     * @return A success response of object SuccessMessage,
+     * bad request in case of account already exists with same id with the ErrorResponse object
      */
     @PostMapping("/account/new")
     public ResponseEntity<SuccessMessage> createNewUserAccount(@RequestBody UserAccount userAccount) {
         userAccountService.createUserAccount(userAccount);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessMessage(String.format("Account successfully created with id %s", userAccount.accountId())));
+    }
+
+    /**
+     * Rest endpoint to close user account.
+     *
+     * @param accountId id of account which has to be closed.
+     * @return A success response of object UserAccount,
+     * not found in case of account is invalid with the ErrorResponse object,
+     * bad request in case of fund is available in account,
+     */
+    @PostMapping("/account/{accountId}/close")
+    public ResponseEntity<SuccessMessage> closeUserAccount(@PathVariable int accountId) {
+        userAccountService.closeUserAccount(accountId);
+        return ResponseEntity.status(HttpStatus.OK).body(new SuccessMessage(String.format("Account with id %s closed successfully", accountId)));
     }
 }

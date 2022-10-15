@@ -1,5 +1,6 @@
 package com.saketsaxena.paymenttransfersystem.service;
 
+import com.saketsaxena.paymenttransfersystem.DTOs.AccountStatus;
 import com.saketsaxena.paymenttransfersystem.DTOs.UserAccount;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +63,7 @@ public class AccountServiceInMemoryImpl implements AccountService {
 
     /**
      * update account balance for specified account id.
-     * @param accountId account id of the receiver.
+     * @param accountId account id for which balance needs to be updated.
      * @param accountBalance new balance of user account.
      */
     @Override
@@ -72,4 +73,14 @@ public class AccountServiceInMemoryImpl implements AccountService {
         userAccounts.put(accountId, updateUserAccount);
     }
 
+    /**
+     * close user account for specified account id.
+     * @param accountId account id of account which needs to deleted.
+     */
+    @Override
+    public void closeAccount(int accountId) {
+        UserAccount updateUserAccount = userAccounts.get(accountId);
+        updateUserAccount.setStatus(AccountStatus.DELETED);
+        userAccounts.put(accountId, updateUserAccount);
+    }
 }

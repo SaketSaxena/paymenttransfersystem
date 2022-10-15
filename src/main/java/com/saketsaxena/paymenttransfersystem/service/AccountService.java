@@ -39,4 +39,6 @@ public interface AccountService {
      * @param accountBalance new balance of user account.
      */
     void updateAccountBalance(int accountId, BigDecimal accountBalance);
+
+    void closeAccount(int accountId);
 }
