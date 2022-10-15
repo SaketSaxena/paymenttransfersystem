@@ -1,12 +1,12 @@
 package com.saketsaxena.paymenttransfersystem.controller;
 
+import com.saketsaxena.paymenttransfersystem.DTOs.SuccessMessage;
 import com.saketsaxena.paymenttransfersystem.DTOs.UserAccount;
 import com.saketsaxena.paymenttransfersystem.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller to publish rest api to manage user account.
@@ -31,8 +31,21 @@ public class UserAccountController {
      * @return A success response of object UserAccount,
      * not found in case of account is invalid with the ErrorResponse object
      */
-    @GetMapping("/accounts/{accountId}")
+    @GetMapping("/account/{accountId}")
     public ResponseEntity<UserAccount> getUserAccount(@PathVariable int accountId) {
         return ResponseEntity.ok(userAccountService.getUserAccount(accountId));
+    }
+
+    /**
+     * Rest endpoint to create new user account.
+     *
+     * @param userAccount A representation of UserAccount object.
+     * @return A success response of object UserAccount,
+     * not found in case of account is invalid with the ErrorResponse object
+     */
+    @PostMapping("/account/new")
+    public ResponseEntity<SuccessMessage> createNewUserAccount(@RequestBody UserAccount userAccount) {
+        userAccountService.createUserAccount(userAccount);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessMessage(String.format("Account successfully created with id %s", userAccount.accountId())));
     }
 }

@@ -1,10 +1,10 @@
 package com.saketsaxena.paymenttransfersystem.DTOs;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 
 /** Class representation of user account.
  * @author Saket Saxena
@@ -47,8 +47,8 @@ public class UserAccount {
         this.accountId = accountId;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.balance = balance;
-        this.currency = currency;
+        this.balance = Optional.ofNullable(balance).orElse(BigDecimal.ZERO);
+        this.currency = Optional.ofNullable(currency).orElse("GBP");
         this.email = email;
         this.address = address;
     }
