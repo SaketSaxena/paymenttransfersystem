@@ -1,5 +1,6 @@
 package com.saketsaxena.paymenttransfersystem.controller;
 
+import com.saketsaxena.paymenttransfersystem.DTOs.SuccessMessage;
 import com.saketsaxena.paymenttransfersystem.DTOs.UserAccount;
 import com.saketsaxena.paymenttransfersystem.service.UserAccountService;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ class UserAccountControllerTest {
                 .thenReturn(new UserAccount(111,"First", "Name", new BigDecimal("100"),
                         "GBP", "abc@abc.com", "street1"));
 
-        ResponseEntity<?> response = userAccountController.getUserAccount(111);
+        ResponseEntity<UserAccount> response = userAccountController.getUserAccount(111);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody())
                 .extracting("accountId", "firstName", "lastName", "balance", "currency", "email", "address")
@@ -43,9 +44,17 @@ class UserAccountControllerTest {
         UserAccount userAccount = new UserAccount(111,"First", "Name", new BigDecimal("100"),
                 "GBP", "abc@abc.com", "street1");
 
-        ResponseEntity<?> response = userAccountController.createNewUserAccount(userAccount);
+        ResponseEntity<SuccessMessage> response = userAccountController.createNewUserAccount(userAccount);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         verify(userAccountService).createUserAccount(userAccount);
+
+    }
+
+    @Test
+    void should_close_user_account(){
+        ResponseEntity<SuccessMessage> response = userAccountController.closeUserAccount(111);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(userAccountService).closeUserAccount(111);
 
     }
 }

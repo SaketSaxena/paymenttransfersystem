@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 
+import static com.saketsaxena.paymenttransfersystem.DTOs.AccountStatus.ACTIVE;
+import static com.saketsaxena.paymenttransfersystem.DTOs.AccountStatus.DELETED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,6 +53,24 @@ class AccountServiceInMemoryImplTest {
         assertThat(accountServiceInMemoryImpl.getUserAccount(333))
                 .extracting("accountId", "firstName", "lastName", "email", "balance")
                 .contains(333, "First", "Name", "abc@abc.com", new BigDecimal("100.10"));
+    }
+
+    @Test
+    void should_close_user_account(){
+        UserAccount newUserAccount = new UserAccount(333, "First", "Name", new BigDecimal("100.10"), "GBP", "abc@abc.com", "street1");
+
+        accountServiceInMemoryImpl.createUserAccount(newUserAccount);
+
+        assertThat(accountServiceInMemoryImpl.getUserAccount(333))
+                .extracting("accountId", "firstName", "lastName", "email", "balance", "status")
+                .contains(333, "First", "Name", "abc@abc.com", new BigDecimal("100.10"), ACTIVE);
+
+        accountServiceInMemoryImpl.closeAccount(333);
+
+        assertThat(accountServiceInMemoryImpl.getUserAccount(333))
+                .extracting("accountId", "firstName", "lastName", "email", "balance", "status")
+                .contains(333, "First", "Name", "abc@abc.com", new BigDecimal("100.10"), DELETED);
+
     }
 
 }

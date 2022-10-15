@@ -2,6 +2,7 @@ package com.saketsaxena.paymenttransfersystem.service;
 
 import com.saketsaxena.paymenttransfersystem.DTOs.UserAccount;
 import com.saketsaxena.paymenttransfersystem.exception.AccountAlreadyExists;
+import com.saketsaxena.paymenttransfersystem.exception.BadRequestException;
 import com.saketsaxena.paymenttransfersystem.exception.InvalidAccountException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +62,35 @@ class UserAccountServiceTest {
         when(accountService.getUserAccount(333)).thenReturn(userAccount);
 
         assertThatExceptionOfType(AccountAlreadyExists.class)
-                .isThrownBy(() ->         userAccountService.createUserAccount(userAccount))
+                .isThrownBy(() ->  userAccountService.createUserAccount(userAccount))
                 .withMessage("Account with id 333 already exists");
+    }
+
+    @Test
+    void should_close_user_account(){
+        UserAccount userAccount = new UserAccount(333,"First", "Name", BigDecimal.ZERO,
+                "GBP", "abc@abc.com", "street1");
+        when(accountService.getUserAccount(333)).thenReturn(userAccount);
+        userAccountService.closeUserAccount(333);
+
+        verify(accountService).closeAccount(333);
+    }
+
+    @Test
+    void should_throw_invalid_account_exception_if_account_is_not_present_while_closing_account(){
+        when(accountService.getUserAccount(100)).thenThrow(new InvalidAccountException("Account id 100 is not valid"));
+
+        assertThatExceptionOfType(InvalidAccountException.class)
+                .isThrownBy(() ->  userAccountService.closeUserAccount(100))
+                .withMessage("Account id 100 is not valid");
+    }
+
+    @Test
+    void should_throw_bad_request_exception_if_account_has_fund_available_while_closing_account(){
+        when(accountService.getUserAccount(100)).thenThrow(new BadRequestException("Please transfer the funds from this account before closing"));
+
+        assertThatExceptionOfType(BadRequestException.class)
+                .isThrownBy(() ->  userAccountService.closeUserAccount(100))
+                .withMessage("Please transfer the funds from this account before closing");
     }
 }
